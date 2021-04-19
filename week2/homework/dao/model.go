@@ -69,7 +69,7 @@ func Read(conn *sql.DB, person *Person, columns ...string) (err error) {
 func Add(conn *sql.DB, p *Person) (num int64, err error) {
 	var result sql.Result
 
-	if err = Read(conn, p); nil != err && err == sql.ErrNoRows {
+	if err = Read(conn, p, "name"); nil != err && err == sql.ErrNoRows {
 		result, err = conn.Exec("INSERT INTO person(name, gender) VALUES (?, ?)", (*p).Name, (*p).Gender)
 		if nil == err {
 			num, err = result.RowsAffected()
@@ -137,7 +137,7 @@ func Fetch(conn *sql.DB, query map[string]interface{}) (l []*Person, num int64, 
 				name   string
 				gender string
 			)
-			rows.Scan(&id, &name, &gender)
+			_ = rows.Scan(&id, &name, &gender)
 			l = append(l, &Person{
 				ID:     id,
 				Name:   name,
