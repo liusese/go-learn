@@ -1,4 +1,4 @@
-package main
+package dao
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ const (
 
 func TestConnection(t *testing.T) {
 	Convey("test conn", t, func() {
-		conn, err := tryConn(driver, dataSource)
+		conn, err := TryConn(driver, dataSource)
 		So(conn, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 		fmt.Printf("%+v\n", conn)
@@ -26,7 +26,7 @@ func TestConnection(t *testing.T) {
 
 func TestRead(t *testing.T) {
 	Convey("test read", t, func() {
-		conn, err := tryConn(driver, dataSource)
+		conn, err := TryConn(driver, dataSource)
 		So(conn, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 		fmt.Printf("%+v\n", conn)
@@ -44,7 +44,7 @@ func TestRead(t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	Convey("test add", t, func() {
-		conn, err := tryConn(driver, dataSource)
+		conn, err := TryConn(driver, dataSource)
 		So(conn, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 		fmt.Printf("%+v\n", conn)
@@ -65,7 +65,7 @@ func TestAdd(t *testing.T) {
 
 func TestDel(t *testing.T) {
 	Convey("test delete", t, func() {
-		conn, err := tryConn(driver, dataSource)
+		conn, err := TryConn(driver, dataSource)
 		So(conn, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 		fmt.Printf("%+v\n", conn)
@@ -80,7 +80,7 @@ func TestDel(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	Convey("test update", t, func() {
-		conn, err := tryConn(driver, dataSource)
+		conn, err := TryConn(driver, dataSource)
 		So(conn, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 		fmt.Printf("%+v\n", conn)
@@ -101,7 +101,7 @@ func TestUpdate(t *testing.T) {
 
 func TestFetch(t *testing.T) {
 	Convey("test fetch", t, func() {
-		conn, err := tryConn(driver, dataSource)
+		conn, err := TryConn(driver, dataSource)
 		So(conn, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 		fmt.Printf("%+v\n", conn)
@@ -114,6 +114,6 @@ func TestFetch(t *testing.T) {
 		l, num, err := Fetch(conn, query)
 		// So(num, ShouldEqual, 1)
 		So(err, ShouldBeNil)
-		fmt.Printf("%+v\n%#v\n", num, l)
+		fmt.Printf("%+v\n%#v\n%+v%+v%+v", num, l, l[0], l[1], l[2])
 	})
 }

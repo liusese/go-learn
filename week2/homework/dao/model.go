@@ -1,16 +1,16 @@
 /*
 我们在数据库操作的时候，比如 dao 层中当遇到一个 sql.ErrNoRows 的时候，是否应该 Wrap 这个 error，抛给上层。为什么，应该怎么做请写出代码？
 */
-package main
+package dao
 
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"reflect"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/pkg/errors"
 	"github.com/pquerna/ffjson/ffjson"
 )
 
@@ -26,7 +26,7 @@ func (p Person) String() string {
 }
 
 // Connection
-func tryConn(driver, source string) (*sql.DB, error) {
+func TryConn(driver, source string) (*sql.DB, error) {
 	return sql.Open(driver, source)
 }
 
@@ -34,8 +34,8 @@ func tryConn(driver, source string) (*sql.DB, error) {
 func Read(conn *sql.DB, person *Person, columns ...string) (err error) {
 	var (
 		querySql   strings.Builder
-		conditions []string
 		args       []interface{}
+		conditions []string
 	)
 
 	if person == nil {
@@ -73,15 +73,23 @@ func Read(conn *sql.DB, person *Person, columns ...string) (err error) {
 
 // Add
 func Add(conn *sql.DB, p *Person) (num int64, err error) {
-	var result sql.Result
+	var (
+		result  sql.Result
+		execSql string
+		args    []interface{}
+	)
 
 	if err = Read(conn, p, "name"); nil != err && err == sql.ErrNoRows {
-		result, err = conn.Exec("INSERT INTO person(name, gender) VALUES (?, ?)", (*p).Name, (*p).Gender)
+		execSql = "INSERT INTO person(name, gender) VALUES (?, ?)"
+		args = append(args, (*p).Name, (*p).Gender)
+		fmt.Println(execSql, args)
+
+		result, err = conn.Exec(execSql, args...)
 		if nil == err {
 			num, err = result.RowsAffected()
 		}
-	} else {
-		log.Println("data already exist")
+	} else if nil == err {
+		err = errors.New("person alread exist")
 	}
 
 	return
@@ -89,11 +97,19 @@ func Add(conn *sql.DB, p *Person) (num int64, err error) {
 
 // Delete
 func Delete(conn *sql.DB, id int) (num int64, err error) {
-	var result sql.Result
+	var (
+		result  sql.Result
+		execSql string
+		args    []interface{}
+	)
 
 	p := Person{ID: id}
 	if err = Read(conn, &p); nil == err {
-		result, err = conn.Exec("DELETE FROM person WHERE id=?", id)
+		execSql = "DELETE FROM person WHERE id=?"
+		args = append(args, id)
+		fmt.Println(execSql, args)
+
+		result, err = conn.Exec(execSql, args...)
 		if nil == err {
 			num, _ = result.RowsAffected()
 		}
@@ -104,11 +120,19 @@ func Delete(conn *sql.DB, id int) (num int64, err error) {
 
 // Update
 func Update(conn *sql.DB, p *Person) (num int64, err error) {
-	var result sql.Result
+	var (
+		result  sql.Result
+		execSql string
+		args    []interface{}
+	)
 
 	m := Person{ID: (*p).ID}
 	if err = Read(conn, &m); nil == err {
-		result, err = conn.Exec("UPDATE person SET name=?, gender=? WHERE id=?", p.Name, p.Gender, m.ID)
+		execSql = "UPDATE person SET name=?, gender=? WHERE id=?"
+		args = append(args, p.Name, p.Gender, m.ID)
+		fmt.Println(execSql, args)
+
+		result, err = conn.Exec(execSql, args...)
 		if nil == err {
 			num, err = result.RowsAffected()
 		}
