@@ -16,7 +16,7 @@ import (
 
 type Person struct {
 	ID     int    `json:"id"`     // pk
-	Name   string `json:"name"`   // not null  unique
+	Name   string `json:"name"`   // not null  unique  validator require
 	Gender string `json:"gender"` // not null
 }
 
