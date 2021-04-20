@@ -33,12 +33,11 @@ func TestRead(t *testing.T) {
 		defer conn.Close()
 
 		p := Person{
-			ID:   2,
 			Name: "Lucy",
 		}
 
 		err = Read(conn, &p, "name", "gender")
-		So(err, ShouldNotBeNil)
+		So(err, ShouldBeNil)
 		fmt.Printf("%+v\n", p)
 	})
 }
@@ -52,13 +51,13 @@ func TestAdd(t *testing.T) {
 		defer conn.Close()
 
 		p := Person{
-			Name:   "HanMeimei",
-			Gender: "female",
+			Name:   "Jim",
+			Gender: "male",
 		}
 
 		num, err := Add(conn, &p)
-		_ = num
-		// So(num, ShouldEqual, 1)
+		// _ = num
+		So(num, ShouldEqual, 1)
 		So(err, ShouldBeNil)
 		fmt.Printf("%+v\n", p)
 	})

@@ -11,12 +11,18 @@ import (
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/pquerna/ffjson/ffjson"
 )
 
 type Person struct {
 	ID     int    `json:"id"`     // pk
 	Name   string `json:"name"`   // not null  unique
 	Gender string `json:"gender"` // not null
+}
+
+func (p Person) String() string {
+	bPerson, _ := ffjson.Marshal(&p)
+	return string(bPerson)
 }
 
 // Connection
