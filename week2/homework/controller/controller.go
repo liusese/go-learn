@@ -25,6 +25,7 @@ func AddPerson(w http.ResponseWriter, r *http.Request) {
 
 	bBody, _ := ioutil.ReadAll(r.Body)
 	_ = ffjson.Unmarshal(bBody, &person)
+	// TODO: validator
 	w.Header().Set("content-type", "application/json")
 	conn, err := dao.TryConn(driver, dataSource)
 	if nil != err {
