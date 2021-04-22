@@ -93,7 +93,7 @@ func Add(conn *sql.DB, p *Person) (num int64, err error) {
 	}
 
 	if nil != err {
-		fmt.Println(errors.Errorf("Add Person failure(%+v)", err))
+		fmt.Println(errors.Errorf("Add person failure, sql(%+v), args(%+v), err(%+v)", execSql, args, err))
 		err = errors.New("Errors: unexpect error")
 	}
 
@@ -124,7 +124,7 @@ func Delete(conn *sql.DB, id int) (num int64, err error) {
 		if err == sql.ErrNoRows {
 			err = errors.New("Errors: no data")
 		} else {
-			fmt.Println(errors.Errorf("Del Person failure(%+v)", err))
+			fmt.Println(errors.Errorf("Del person failure, sql(%+v), args(%+v), err(%+v)", execSql, args, err))
 			err = errors.Errorf("Errors: unexpect error")
 		}
 	}
@@ -156,7 +156,7 @@ func Update(conn *sql.DB, p *Person) (num int64, err error) {
 		if err == sql.ErrNoRows {
 			err = errors.New("Errors: no data")
 		} else {
-			fmt.Println(errors.Errorf("Update Person failure(%+v)", err))
+			fmt.Println(errors.Errorf("Update person failure, sql(%+v), args(%+v), err(%+v)", execSql, args, err))
 			err = errors.Errorf("Errors: unexpect error")
 		}
 	}
@@ -185,17 +185,9 @@ func Fetch(conn *sql.DB, query map[string]interface{}) (l []*Person, num int64, 
 		defer rows.Close()
 
 		for rows.Next() {
-			var (
-				id     int
-				name   string
-				gender string
-			)
-			_ = rows.Scan(&id, &name, &gender)
-			l = append(l, &Person{
-				ID:     id,
-				Name:   name,
-				Gender: gender,
-			})
+			var person Person
+			_ = rows.Scan(&person.ID, &person.Name, &person.Gender)
+			l = append(l, &person)
 		}
 
 		num = int64(len(l))
@@ -203,7 +195,7 @@ func Fetch(conn *sql.DB, query map[string]interface{}) (l []*Person, num int64, 
 		if err == sql.ErrNoRows {
 			err = errors.New("Errors: no data")
 		} else {
-			fmt.Println(errors.Errorf("Fetch Person failure(%+v)", err))
+			fmt.Println(errors.Errorf("Fetch person failure, sql(%+v), args(%+v), err(%+v)", querySql, args, err))
 			err = errors.Errorf("Errors: unexpect error")
 		}
 	}
