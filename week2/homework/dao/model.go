@@ -79,7 +79,7 @@ func Add(conn *sql.DB, p *Person) (num int64, err error) {
 		args    []interface{}
 	)
 
-	if err = Read(conn, p, "name"); nil != err && err == sql.ErrNoRows {
+	if err = Read(conn, p, "name"); nil != err && errors.Is(err, sql.ErrNoRows) {
 		execSql = "INSERT INTO person(name, gender) VALUES (?, ?)"
 		args = append(args, (*p).Name, (*p).Gender)
 		fmt.Println(execSql, args)
@@ -121,7 +121,7 @@ func Delete(conn *sql.DB, id int) (num int64, err error) {
 	}
 
 	if nil != err {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			err = errors.New("Errors: no data")
 		} else {
 			fmt.Println(errors.Errorf("Del person failure, sql(%+v), args(%+v), err(%+v)", execSql, args, err))
@@ -153,7 +153,7 @@ func Update(conn *sql.DB, p *Person) (num int64, err error) {
 	}
 
 	if nil != err {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			err = errors.New("Errors: no data")
 		} else {
 			fmt.Println(errors.Errorf("Update person failure, sql(%+v), args(%+v), err(%+v)", execSql, args, err))
@@ -191,8 +191,12 @@ func Fetch(conn *sql.DB, query map[string]interface{}) (l []*Person, num int64, 
 		}
 
 		num = int64(len(l))
+
+		if num == 0 {
+			err = errors.New("Errors: no data")
+		}
 	} else {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			err = errors.New("Errors: no data")
 		} else {
 			fmt.Println(errors.Errorf("Fetch person failure, sql(%+v), args(%+v), err(%+v)", querySql, args, err))
