@@ -36,6 +36,7 @@ func main() {
 		}
 	})
 
+	logger.Println("http server Running on http://:8080")
 	_ = server.ListenAndServe()
 
 	if err := eg.Wait(); err != nil && !errors.Is(err, context.Canceled) {
