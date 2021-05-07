@@ -49,6 +49,7 @@ func main() {
 func runServer(logger *log.Logger) *http.Server {
 	router := http.NewServeMux()
 	router.HandleFunc("/show", func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(300 * time.Millisecond)
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`OK`))
 	})
